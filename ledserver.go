@@ -8,9 +8,12 @@ import (
 	"image/color"
 	"net/http"
 	"os"
+	"runtime"
 	"strconv"
 	"strings"
 )
+
+const httpPort = ":8080"
 
 var (
 	addr uint16 = 61184 // 24 key ir remote control
@@ -40,6 +43,10 @@ var buttons = []button{
 	{"", c(1, 4, 0)}, {"", c(0, 1, 4)}, {"", c(4, 0, 1)}, {"SMOOTH", grey},
 }
 
+func init() {
+	runtime.LockOSThread()
+}
+
 func main() {
 	// init gpio
 	err := rpio.Open()
@@ -67,6 +74,9 @@ func main() {
 		}
 	}
 
+	// use single channel for handling commands to ensure only one signal is transmited at time
+	cmdChan := make(chan uint8)
+
 	// load html template
 	indexTmpl := template.Must(template.ParseFiles("index.html"))
 
@@ -93,9 +103,14 @@ func main() {
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
-		nec.EncodeExt(addr, uint8(cmd)).TransmitTimes(toLED, 5) // 5 times just to be sure
-		http.Redirect(w, req, "/", http.StatusSeeOther)
+		w.WriteHeader(http.StatusOK)
+		cmdChan <- uint8(cmd)
 	})
 
-	http.ListenAndServe(":8080", nil)
+	go http.ListenAndServe(httpPort, nil)
+	fmt.Printf("Serving at %s\n", httpPort)
+
+	for cmd := range cmdChan {
+		nec.EncodeExt(addr, cmd).TransmitTimes(toLED, 3) // 3 times just to be sure
+	}
 }
