@@ -23,10 +23,25 @@ button:active {
 	opacity: 0.75;
 }
 </style>
+<script>
+const repeater = {
+	start (cmd) {
+		this.stop()
+		fetch('/cmd/'+cmd)
+		this.intId = setInterval(fetch, 250, '/cmd/'+cmd)
+	},
+	stop () {
+		clearInterval(this.intId)
+	},
+	intId: 0,
+}
+</script>
 <buttons>
 	{{ range $i, $btn := . }}
 	<button
-		onMousedown="fetch('/cmd/{{$i}}')"
+		onMouseDown="repeater.start({{$i}})"
+		onMouseUp="repeater.stop()"
+		onMouseLeave="repeater.stop()"
 		style="{{with $btn.Color}}background: rgb({{.R}}, {{.G}}, {{.B}});{{end}}"
 	>
 		{{ $btn.Name }}
