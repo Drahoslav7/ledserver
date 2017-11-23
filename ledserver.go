@@ -11,6 +11,7 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"syscall"
 )
 
 const httpPort = ":8080"
@@ -45,6 +46,7 @@ var buttons = []button{
 
 func init() {
 	runtime.LockOSThread()
+	syscall.Setpriority(syscall.PRIO_PROCESS, 0, -5) // lower niceness to get more timing precission (theoretically)
 }
 
 func main() {
@@ -104,7 +106,9 @@ func main() {
 			return
 		}
 		w.WriteHeader(http.StatusOK)
-		cmdChan <- uint8(cmd)
+		go func () {
+			cmdChan <- uint8(cmd)
+		}()
 	})
 
 	go http.ListenAndServe(httpPort, nil)
