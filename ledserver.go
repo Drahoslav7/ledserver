@@ -24,10 +24,36 @@ var (
 	grey  = color.RGBA{187, 187, 187, 255}
 	black = color.RGBA{8, 8, 8, 255}
 	red   = color.RGBA{204, 0, 0, 255}
+	white = color.RGBA{255, 255, 255, 255}
 )
 
-func c(r, g, b uint8) color.RGBA {
-	return color.RGBA{r * 51, g * 51, b * 51, 255}
+func c(h float64) color.RGBA {
+	l := 0.5
+	s := 1.0
+	hue2rgb := func(p, q, t float64) float64 {
+		if t < 0 {
+			t += 1.0
+		}
+		if t > 1 {
+			t -= 1.0
+		}
+		switch {
+		case t < 1./6:
+			return p + (q-p)*6*t
+		case t < 3./6:
+			return q
+		case t < 4./6:
+			return p + (q-p)*(2/3-t)*6
+		default:
+			return p
+		}
+	}
+	q := l + s - l*s
+	p := 2*l - q
+	r := uint8(hue2rgb(p, q, h+1./3) * 255)
+	g := uint8(hue2rgb(p, q, h) * 255)
+	b := uint8(hue2rgb(p, q, h-1./3) * 255)
+	return color.RGBA{r, g, b, 255}
 }
 
 type button struct {
@@ -37,11 +63,11 @@ type button struct {
 
 var buttons = []button{
 	{"\u2795", grey}, {"\u2796", grey}, {"OFF", black}, {"ON", red},
-	{"", c(5, 0, 0)}, {"", c(0, 5, 0)}, {"", c(0, 0, 5)}, {"", c(5, 5, 5)},
-	{"", c(4, 1, 0)}, {"", c(0, 4, 1)}, {"", c(1, 0, 4)}, {"STROBE", grey},
-	{"", c(3, 2, 0)}, {"", c(0, 3, 2)}, {"", c(2, 0, 3)}, {"FADE", grey},
-	{"", c(2, 3, 0)}, {"", c(0, 2, 3)}, {"", c(3, 0, 2)}, {"SMOOTH", grey},
-	{"", c(1, 4, 0)}, {"", c(0, 1, 4)}, {"", c(4, 0, 1)}, {"FLASH", grey},
+	{"", c(0. / 15)}, {"", c(5. / 15)}, {"", c(10. / 15)}, {"", white},
+	{"", c(1. / 15)}, {"", c(6. / 15)}, {"", c(11. / 15)}, {"STROBE", grey},
+	{"", c(2. / 15)}, {"", c(7. / 15)}, {"", c(12. / 15)}, {"FADE", grey},
+	{"", c(3. / 15)}, {"", c(8. / 15)}, {"", c(13. / 15)}, {"SMOOTH", grey},
+	{"", c(4. / 15)}, {"", c(9. / 15)}, {"", c(14. / 15)}, {"FLASH", grey},
 }
 
 func init() {
@@ -106,7 +132,7 @@ func main() {
 			return
 		}
 		w.WriteHeader(http.StatusOK)
-		go func () {
+		go func() {
 			cmdChan <- uint8(cmd)
 		}()
 	})
