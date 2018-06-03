@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/drahoslav7/go-nec"
-	"github.com/drahoslav7/go-rpio"
+	"github.com/stianeikeland/go-rpio"
 	"html/template"
 	"image/color"
 	"net/http"
