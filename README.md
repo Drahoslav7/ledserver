@@ -5,9 +5,9 @@ Web application to remotely control RGB LEDs via IR signal - for Raspberry Pi - 
 <img src="/../images/web.png?raw=true" height=256 /> **❯**
 <img src="/../images/irr.jpg?raw=true" height=256 />
 
-It uses my other go packeges:
-   - [go-rpio](//github.com/drahoslav7/go-rpio) - to control gpio pins of Raspberri Pi (forked from [stianeikeland](//github.com/stianeikeland/go-rpio) and extended by clock and pwm modes)
-   - [go-nec](//github.com/drahoslav7/go-nec) - for basic encoding and transmission of NEC - Infrared transmission protocol
+It uses two other go packeges:
+   - [go-rpio](//github.com/stianeikeland/go-rpio) - to control gpio pins of Raspberri Pi (from [stianeikeland](//github.com/stianeikeland/go-rpio) - which I extended by clock and pwm modes)
+   - [go-nec](//github.com/drahoslav7/go-nec) - my small package for basic encoding and transmission of NEC - Infrared transmission protocol
    
 
 ## Requirements
