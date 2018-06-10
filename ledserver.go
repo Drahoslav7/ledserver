@@ -1,3 +1,4 @@
+// IR remote controller on Raspberry Pi for RGB LED strip
 package main
 
 import (
