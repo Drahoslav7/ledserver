@@ -116,6 +116,6 @@ func main() {
 	fmt.Printf("Serving at %s\n", httpPort)
 
 	for cmd := range cmdChan {
-		nec.EncodeExt(addr, cmd).TransmitTimes(toLED, 3) // 3 times just to be sure
+		nec.EncodeExt(addr, cmd).TransmitTimes(toLED, 2) // Twice, just to be sure
 	}
 }
